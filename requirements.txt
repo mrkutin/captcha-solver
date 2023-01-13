@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+tensorflow
+keras
+numpy
+opencv-python
+pybase64
+imutils
