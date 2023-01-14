@@ -103,7 +103,7 @@ def slice(img):
 
 
 def base64_to_image(base64string):
-    np_arr = np.fromstring(base64.b64decode(base64string), np.uint8)
+    np_arr = np.frombuffer(base64.b64decode(base64string), np.uint8)
     img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     # cv2.imshow('img', img)
     # cv2.waitKey(0)
@@ -111,27 +111,27 @@ def base64_to_image(base64string):
     return img
 
 predictions = []
-def solve_char(idx, char_image):
+def solve_char(char_image):
     char_image = resize_to_fit(char_image, 64, 64)
     char_image = np.expand_dims(char_image, axis=0)
     prediction_result = cnn.predict(char_image / 255.0)
-    global predictions
-    predictions[idx] = str(np.argmax(prediction_result[0]))
+    return str(np.argmax(prediction_result[0]))
+    # global predictions
+    # predictions[idx] = str(np.argmax(prediction_result[0]))
 
 def solve(img):
-    global predictions
-    predictions = [None for i in range(NUMBER_OF_CHARS)]
     letter_images = slice(img)
-    threads = []
+    # threads = []
 
     start_time = time.time()
-
+    predictions = [None for i in range(NUMBER_OF_CHARS)]
     for idx in range(NUMBER_OF_CHARS):
-        thread = Thread(target=solve_char, args=[idx, letter_images[idx]])
-        thread.start()
-        threads.append(thread)
-    for thread in threads:
-        thread.join()
+        predictions[idx] = solve_char(letter_images[idx])
+        # thread = Thread(target=solve_char, args=[idx, letter_images[idx]])
+        # thread.start()
+        # threads.append(thread)
+    # for thread in threads:
+    #     thread.join()
 
     print(predictions)
     end_time = time.time()
